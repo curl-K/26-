@@ -510,12 +510,12 @@ def test_出库报到场外就离开登记_名称留下_场外立刻空出来():
     assert scheduler.name_of("N-1") == "箱子"
     assert scheduler.outside_free()
 
+    stayed = scheduler.alerts()
     scheduler.see("N-1", OUTSIDE)
     scheduler.advance(5)
 
     assert scheduler.cell_of("N-1") is None
-    assert not has_alert(scheduler, "未经入库", number="N-1")
-    assert not has_alert(scheduler, "未经出库", number="N-1")
+    assert scheduler.alerts() == stayed
     assert scheduler.outside_free()
     assert scheduler.name_of("N-1") == "箱子"
 
@@ -796,6 +796,26 @@ def test_云恢复后两辆车都空闲时待派仍按先下发的先走():
     assert scheduler.task(first.task_id).pickup == 8
     assert scheduler.task(second.task_id).vehicle == 2
     assert scheduler.task(second.task_id).status == "执行中"
+
+
+def test_待派的货物连续三秒读不到就离开登记并放开占住的格子():
+    scheduler = Scheduler()
+    occupy_both(scheduler)
+    scheduler.see("货甲", 8)
+    scheduler.bind_name("货甲", "甲")
+    pending = scheduler.transfer("货甲", 9)
+    scheduler.see("货甲", None)
+    scheduler.advance(3)
+
+    assert scheduler.cell_of("货甲") is None
+    assert scheduler.name_of("货甲") == "甲"
+    assert scheduler.cell_free(8)
+    assert scheduler.cell_free(9)
+    assert scheduler.task(pending.task_id).status == "已结束"
+    assert scheduler.task(pending.task_id).end_reason == "未经出库"
+    assert has_alert(scheduler, "未经出库", number="货甲", cell=8)
+    assert scheduler.vehicle(1).task_id is not None
+    assert scheduler.vehicle(2).task_id is not None
 
 
 def test_出库待派也占住场外_取货货位跟着当前登记():
