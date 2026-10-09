@@ -1,0 +1,13 @@
+[project]
+name = "warehouse-scheduling"
+version = "0.1.0"
+description = "仓储边缘调度：登记、任务、告警，以及运输车能不能开"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
