@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.whpu.reagent.persistence.mapper.SampleMapper">
+
+    <insert id="insertSample" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO sample (device_name, slot_no, temperature, humidity, tvoc, eco2, sampled_at)
+        VALUES (#{deviceName}, #{slotNo,jdbcType=INTEGER}, #{temperature,jdbcType=DOUBLE},
+                #{humidity,jdbcType=DOUBLE}, #{tvoc,jdbcType=INTEGER}, #{eco2,jdbcType=INTEGER}, #{sampledAt})
+    </insert>
+
+    <delete id="deleteBefore">
+        DELETE FROM sample WHERE sampled_at &lt; #{cutoff}
+    </delete>
+
+    <select id="latest" resultType="edu.whpu.reagent.domain.Sample">
+        SELECT id, device_name, slot_no, temperature, humidity, tvoc, eco2, sampled_at
+        FROM sample
+        ORDER BY sampled_at DESC, id DESC
+        LIMIT #{limit}
+    </select>
+</mapper>

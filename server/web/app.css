@@ -1,0 +1,163 @@
+:root {
+  color: #1c1915;
+  background: #f3efe6;
+  font-family: "Source Han Sans SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+}
+
+body {
+  margin: 0 auto;
+  max-width: 920px;
+  padding: 28px 20px 64px;
+}
+
+header {
+  border-bottom: 2px solid #1f3d32;
+  margin-bottom: 22px;
+  padding-bottom: 14px;
+}
+
+.mark {
+  margin: 0;
+  color: #1f3d32;
+  letter-spacing: 0.12em;
+  font-size: 13px;
+}
+
+h1 {
+  margin: 4px 0;
+  font-size: 40px;
+  font-weight: 650;
+}
+
+.lead, .hint {
+  color: #5c564c;
+  font-size: 14px;
+}
+
+.panel, table, .bar {
+  background: #fffdf8;
+  border: 1px solid #d9d1c3;
+}
+
+.panel {
+  padding: 16px 18px 18px;
+  margin-top: 16px;
+}
+
+h2 {
+  margin: 0 0 10px;
+  font-size: 18px;
+}
+
+form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: end;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+}
+
+input, select, button {
+  font: inherit;
+  padding: 8px 10px;
+  border: 1px solid #1c1915;
+  background: #fff;
+  color: inherit;
+}
+
+button {
+  background: #1f3d32;
+  color: #f6f1e7;
+  cursor: pointer;
+}
+
+.bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+}
+
+.bar p {
+  margin: 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+}
+
+th, td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid #e6dfd2;
+  vertical-align: top;
+}
+
+th {
+  font-size: 13px;
+  color: #5c564c;
+  font-weight: 600;
+}
+
+.high {
+  color: #8f2d2d;
+  font-weight: 700;
+}
+
+.error {
+  color: #8f2d2d;
+  margin: 8px 0 0;
+}
+
+.note {
+  margin: 12px 0 0;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid #e6dfd2;
+}
+
+li.acked {
+  color: #6d675e;
+}
+
+dl {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 6px 12px;
+  margin: 0;
+}
+
+dt {
+  color: #5c564c;
+}
+
+.over {
+  color: #8f2d2d;
+}
+
+#online.up {
+  color: #1f3d32;
+}
+
+#online.down {
+  color: #8f2d2d;
+}

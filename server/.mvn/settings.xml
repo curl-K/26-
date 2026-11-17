@@ -1,0 +1,9 @@
+<settings>
+  <mirrors>
+    <mirror>
+      <id>aliyun</id>
+      <mirrorOf>*</mirrorOf>
+      <url>https://maven.aliyun.com/repository/public</url>
+    </mirror>
+  </mirrors>
+</settings>

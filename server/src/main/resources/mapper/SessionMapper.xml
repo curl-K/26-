@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.whpu.reagent.persistence.mapper.SessionMapper">
+
+    <select id="findActive" resultType="edu.whpu.reagent.domain.CabinetSession">
+        SELECT id, slot_no, state, first_account_id, second_account_id, first_name, second_name,
+               started_at, opened_at, expires_at, closed_at, close_reason, last_reading, streak,
+               present_uids, removed_uids, ignored_uids, suppressed, dual_alarm
+        FROM cabinet_session
+        WHERE slot_no = #{slot} AND state IN ('waiting', 'open')
+        ORDER BY id DESC
+        LIMIT 1
+    </select>
+
+    <insert id="insertSession" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO cabinet_session (
+            slot_no, state, first_account_id, second_account_id, first_name, second_name,
+            started_at, opened_at, expires_at, closed_at, close_reason, last_reading, streak,
+            present_uids, removed_uids, ignored_uids, suppressed, dual_alarm
+        ) VALUES (
+            #{slotNo}, #{state}, #{firstAccountId,jdbcType=BIGINT}, #{secondAccountId,jdbcType=BIGINT},
+            #{firstName,jdbcType=VARCHAR}, #{secondName,jdbcType=VARCHAR},
+            #{startedAt,jdbcType=TIMESTAMP}, #{openedAt,jdbcType=TIMESTAMP}, #{expiresAt,jdbcType=TIMESTAMP},
+            #{closedAt,jdbcType=TIMESTAMP}, #{closeReason,jdbcType=VARCHAR}, #{lastReading,jdbcType=VARCHAR},
+            #{streak}, #{presentUids}, #{removedUids}, #{ignoredUids}, #{suppressed}, #{dualAlarm}
+        )
+    </insert>
+
+    <update id="updateSession">
+        UPDATE cabinet_session
+        SET state = #{state},
+            second_account_id = #{secondAccountId,jdbcType=BIGINT},
+            second_name = #{secondName,jdbcType=VARCHAR},
+            opened_at = #{openedAt,jdbcType=TIMESTAMP},
+            expires_at = #{expiresAt,jdbcType=TIMESTAMP},
+            closed_at = #{closedAt,jdbcType=TIMESTAMP},
+            close_reason = #{closeReason,jdbcType=VARCHAR},
+            last_reading = #{lastReading,jdbcType=VARCHAR},
+            streak = #{streak},
+            present_uids = #{presentUids},
+            removed_uids = #{removedUids},
+            ignored_uids = #{ignoredUids},
+            suppressed = #{suppressed},
+            dual_alarm = #{dualAlarm}
+        WHERE id = #{id}
+    </update>
+</mapper>

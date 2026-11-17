@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.whpu.reagent.persistence.mapper.AccountMapper">
+
+    <select id="findByUsername" resultType="edu.whpu.reagent.domain.Account">
+        SELECT id, username, display_name, role, password_hash, failed_attempts, locked_until
+        FROM account
+        WHERE username = #{username}
+    </select>
+
+    <insert id="insertAccount" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO account (username, display_name, role, password_hash, failed_attempts, locked_until, created_at)
+        VALUES (#{username}, #{displayName}, #{role}, #{passwordHash}, #{failedAttempts},
+                #{lockedUntil,jdbcType=TIMESTAMP}, CURRENT_TIMESTAMP)
+    </insert>
+
+    <update id="updateAccount">
+        UPDATE account
+        SET failed_attempts = #{failedAttempts},
+            locked_until = #{lockedUntil,jdbcType=TIMESTAMP}
+        WHERE id = #{id}
+    </update>
+</mapper>

@@ -1,0 +1,2 @@
+*.sh text eol=lf
+server/mvnw text eol=lf

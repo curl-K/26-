@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.whpu.reagent.persistence.mapper.AccessMapper">
+
+    <insert id="insertAccess" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO access_record (session_id, reagent_id, chip_uid, slot_no, action, handler1, handler2, occurred_at)
+        VALUES (#{sessionId}, #{reagentId}, #{chipUid,jdbcType=VARCHAR}, #{slotNo}, #{action},
+                #{handler1,jdbcType=VARCHAR}, #{handler2,jdbcType=VARCHAR}, #{occurredAt})
+    </insert>
+
+    <select id="listBySession" resultType="edu.whpu.reagent.domain.AccessRecord">
+        SELECT id, session_id, reagent_id, chip_uid, slot_no, action, handler1, handler2, occurred_at
+        FROM access_record
+        WHERE session_id = #{sessionId}
+        ORDER BY id
+    </select>
+
+    <delete id="removeById">
+        DELETE FROM access_record WHERE id = #{id}
+    </delete>
+</mapper>

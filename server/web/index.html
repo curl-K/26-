@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>试剂清单</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <header>
+    <p class="mark">实验室试剂柜</p>
+    <h1>清单</h1>
+    <p class="lead">每一瓶的名称、等级、所在格、状态、经手人和时间。网页不能开格。</p>
+  </header>
+  <main>
+    <section id="login" class="panel">
+      <h2>登录</h2>
+      <form id="login-form">
+        <label>账号<input name="username" autocomplete="username" required></label>
+        <label>密码<input name="password" type="password" autocomplete="current-password" required></label>
+        <button type="submit">进入</button>
+        <p id="login-error" class="error" hidden></p>
+      </form>
+      <p class="hint">演示账号：管理人 manager / manager123，取用人 chen / chen123，li / li123。</p>
+    </section>
+
+    <section id="desk" hidden>
+      <div class="bar">
+        <p id="who"></p>
+        <button id="logout" type="button">退出</button>
+      </div>
+      <p id="note" class="note" hidden></p>
+      <table>
+        <thead>
+          <tr>
+            <th>名称</th>
+            <th>等级</th>
+            <th>格</th>
+            <th>状态</th>
+            <th>经手人</th>
+            <th>时间</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+      <p id="empty" class="hint" hidden>清单里还没有试剂。</p>
+
+      <section id="register" class="panel" hidden>
+        <h2>登记待绑定</h2>
+        <p class="hint">低和中在第一格，高在第二格。这一格只能有一条待绑定。</p>
+        <form id="register-form">
+          <label>名称<input name="name" required maxlength="128"></label>
+          <label>等级
+            <select name="level">
+              <option>低</option>
+              <option>中</option>
+              <option>高</option>
+            </select>
+          </label>
+          <label>格
+            <select name="slot">
+              <option value="1">第一格</option>
+              <option value="2">第二格</option>
+            </select>
+          </label>
+          <button type="submit">登记</button>
+        </form>
+      </section>
+
+      <section id="alarms" class="panel" hidden>
+        <h2>告警</h2>
+        <ul id="alarm-list"></ul>
+      </section>
+
+      <section id="env" class="panel" hidden>
+        <h2>环境 <span id="online"></span></h2>
+        <p class="hint">连续三次越限才告警。短时偏高只显示在读数里。</p>
+        <dl id="env-readings"></dl>
+      </section>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
