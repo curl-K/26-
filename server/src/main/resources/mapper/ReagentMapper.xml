@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.whpu.reagent.persistence.mapper.ReagentMapper">
+
+    <select id="listRows" resultType="edu.whpu.reagent.persistence.ReagentListRow">
+        SELECT r.id, r.name, r.level, r.slot_no, r.status, r.chip_uid,
+               a.handler1, a.handler2, a.occurred_at
+        FROM reagent r
+        LEFT JOIN LATERAL (
+            SELECT handler1, handler2, occurred_at
+            FROM access_record
+            WHERE reagent_id = r.id
+            ORDER BY occurred_at DESC, id DESC
+            LIMIT 1
+        ) a ON true
+        ORDER BY r.slot_no, r.id
+    </select>
+
+    <select id="findPending" resultType="edu.whpu.reagent.domain.Reagent">
+        SELECT id, chip_uid, name, level, slot_no, status, updated_at
+        FROM reagent
+        WHERE slot_no = #{slot} AND status = 'pending'
+        ORDER BY id
+        LIMIT 1
+    </select>
+
+    <select id="findByChip" resultType="edu.whpu.reagent.domain.Reagent">
+        SELECT id, chip_uid, name, level, slot_no, status, updated_at
+        FROM reagent
+        WHERE chip_uid = #{uid}
+    </select>
+
+    <insert id="insertReagent" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO reagent (chip_uid, name, level, slot_no, status, updated_at)
+        VALUES (#{chipUid,jdbcType=VARCHAR}, #{name}, #{level}, #{slotNo}, #{status}, #{updatedAt})
+    </insert>
+
+    <update id="updateReagent">
+        UPDATE reagent
+        SET chip_uid = #{chipUid,jdbcType=VARCHAR},
+            name = #{name},
+            level = #{level},
+            slot_no = #{slotNo},
+            status = #{status},
+            updated_at = #{updatedAt}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteReagent">
+        DELETE FROM reagent WHERE id = #{id}
+    </delete>
+</mapper>

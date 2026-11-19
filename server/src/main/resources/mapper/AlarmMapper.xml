@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.whpu.reagent.persistence.mapper.AlarmMapper">
+
+    <insert id="insertAlarm" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO alarm (alarm_type, chip_uid, slot_no, message, session_id, acknowledged, created_at)
+        VALUES (#{alarmType}, #{chipUid,jdbcType=VARCHAR}, #{slotNo,jdbcType=INTEGER}, #{message},
+                #{sessionId,jdbcType=BIGINT}, #{acknowledged}, #{createdAt})
+    </insert>
+
+    <select id="listRecent" resultType="edu.whpu.reagent.domain.Alarm">
+        SELECT id, alarm_type, chip_uid, slot_no, message, session_id, acknowledged,
+               acknowledged_by, acknowledged_at, created_at
+        FROM alarm
+        ORDER BY acknowledged ASC, id DESC
+        LIMIT 50
+    </select>
+
+    <update id="acknowledge">
+        UPDATE alarm
+        SET acknowledged = true,
+            acknowledged_by = #{accountId},
+            acknowledged_at = #{at}
+        WHERE id = #{id} AND acknowledged = false
+    </update>
+</mapper>
