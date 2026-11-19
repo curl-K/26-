@@ -41,6 +41,11 @@ public class MemoryCabinetRepository implements CabinetRepository {
     }
 
     @Override
+    public List<Account> listAccounts() {
+        return new ArrayList<>(accounts.values());
+    }
+
+    @Override
     public void updateAccount(Account account) {
         accounts.put(account.getId(), account);
     }
@@ -152,6 +157,16 @@ public class MemoryCabinetRepository implements CabinetRepository {
     @Override
     public void deleteAccess(long id) {
         access.remove(id);
+    }
+
+    @Override
+    public void deleteAccessByReagent(long reagentId) {
+        access.values().removeIf(record -> record.getReagentId() != null && record.getReagentId() == reagentId);
+    }
+
+    @Override
+    public void deleteReagent(long id) {
+        reagents.remove(id);
     }
 
     @Override

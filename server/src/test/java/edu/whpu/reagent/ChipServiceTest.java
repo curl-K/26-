@@ -106,6 +106,19 @@ class ChipServiceTest {
     }
 
     @Test
+    void managerCanDeleteAReagentFromTheList() {
+        Lab lab = new Lab();
+        lab.catalog.register("乙醇", "低", 1);
+        long id = lab.catalog.list().get(0).id();
+        lab.confirm.confirm(lab.seq(), 1, "chen", "chen123");
+        lab.chip.observe(lab.seq(), 1, "E1");
+        lab.chip.observe(lab.seq(), 1, "E1");
+        assertEquals("ok", lab.catalog.delete(id).result());
+        assertTrue(lab.catalog.list().isEmpty());
+        assertEquals("not_found", lab.catalog.delete(id).result());
+    }
+
+    @Test
     void highLevelCannotBeRegisteredInSlotOne() {
         Lab lab = new Lab();
         assertEquals("level_cell_mismatch", lab.catalog.register("硫酸", "高", 1).result());

@@ -54,6 +54,11 @@ public class MybatisCabinetRepository implements CabinetRepository {
     }
 
     @Override
+    public List<Account> listAccounts() {
+        return accounts.listPeople();
+    }
+
+    @Override
     public void updateAccount(Account account) {
         accounts.updateAccount(account);
     }
@@ -121,6 +126,16 @@ public class MybatisCabinetRepository implements CabinetRepository {
     @Override
     public void deleteAccess(long id) {
         access.removeById(id);
+    }
+
+    @Override
+    public void deleteAccessByReagent(long reagentId) {
+        access.deleteByReagent(reagentId);
+    }
+
+    @Override
+    public void deleteReagent(long id) {
+        reagents.deleteReagent(id);
     }
 
     @Override

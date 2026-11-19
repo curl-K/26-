@@ -18,4 +18,8 @@
     <delete id="removeById">
         DELETE FROM access_record WHERE id = #{id}
     </delete>
+
+    <delete id="deleteByReagent">
+        DELETE FROM access_record WHERE reagent_id = #{reagentId}
+    </delete>
 </mapper>

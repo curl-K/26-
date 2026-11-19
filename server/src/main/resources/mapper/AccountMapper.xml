@@ -2,6 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="edu.whpu.reagent.persistence.mapper.AccountMapper">
 
+    <select id="listPeople" resultType="edu.whpu.reagent.domain.Account">
+        SELECT id, username, display_name, role
+        FROM account
+        ORDER BY id
+    </select>
+
     <select id="findByUsername" resultType="edu.whpu.reagent.domain.Account">
         SELECT id, username, display_name, role, password_hash, failed_attempts, locked_until
         FROM account

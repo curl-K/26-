@@ -50,8 +50,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/reagents").authenticated()
                         .requestMatchers(HttpMethod.POST, "/reagents").hasRole("MANAGER")
                         .requestMatchers("/reagents/**").hasRole("MANAGER")
-                        .requestMatchers("/alarms", "/alarms/**").hasRole("MANAGER")
-                        .requestMatchers("/environment", "/environment/**").hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.GET, "/alarms").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/alarms/**").hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.GET, "/environment").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/accounts").hasRole("MANAGER")
                         .anyRequest().authenticated())
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, error) -> {
@@ -62,7 +64,7 @@ public class SecurityConfig {
                         .accessDeniedHandler((request, response, error) -> {
                             response.setStatus(403);
                             response.setContentType("application/json;charset=UTF-8");
-                            response.getWriter().write("{\"result\":\"forbidden\",\"message\":\"取用人只能看清单\"}");
+                            response.getWriter().write("{\"result\":\"forbidden\",\"message\":\"没有这项权限\"}");
                         }))
                 .addFilterBefore(deviceTokenFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

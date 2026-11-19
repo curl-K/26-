@@ -52,6 +52,19 @@ class EnvironmentServiceTest {
         assertFalse(lab.environment.view().online());
     }
 
+    @Test
+    void historyListsSamplesFromOldestToNewest() {
+        Lab lab = new Lab();
+        lab.environment.record(lab.seq(), "env-1", null, 20.0, 40.0, 10, 400);
+        lab.clock.advance(Duration.ofMinutes(1));
+        lab.environment.record(lab.seq(), "env-1", null, 22.0, 40.0, 30, 500);
+        var history = lab.environment.view().history();
+        assertEquals(2, history.size());
+        assertEquals(20.0, history.get(0).temperature());
+        assertEquals(22.0, history.get(1).temperature());
+        assertEquals(500, history.get(1).eco2());
+    }
+
     private static long envAlarms(Lab lab) {
         return lab.catalog.alarms().stream().filter(alarm -> "env".equals(alarm.code())).count();
     }

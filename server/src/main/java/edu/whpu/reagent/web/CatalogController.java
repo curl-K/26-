@@ -3,6 +3,7 @@ package edu.whpu.reagent.web;
 import edu.whpu.reagent.domain.Outcome;
 import edu.whpu.reagent.service.CatalogService;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,6 +35,15 @@ public class CatalogController {
         return catalog.register(request.name(), request.level(), request.slot());
     }
 
+    @DeleteMapping("/reagents/{id}")
+    public Outcome delete(@PathVariable long id) {
+        return catalog.delete(id);
+    }
+
+    @GetMapping("/accounts")
+    public Map<String, Object> accounts() {
+        return Map.of("items", catalog.people());
+    }
     @GetMapping("/alarms")
     public Map<String, Object> alarms() {
         return Map.of("items", catalog.alarms());

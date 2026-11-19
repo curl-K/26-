@@ -45,4 +45,8 @@
             updated_at = #{updatedAt}
         WHERE id = #{id}
     </update>
+
+    <delete id="deleteReagent">
+        DELETE FROM reagent WHERE id = #{id}
+    </delete>
 </mapper>

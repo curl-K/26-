@@ -1,5 +1,6 @@
 package edu.whpu.reagent.service;
 
+import edu.whpu.reagent.domain.Account;
 import edu.whpu.reagent.domain.Outcome;
 import edu.whpu.reagent.domain.Reagent;
 import edu.whpu.reagent.domain.Texts;
@@ -79,6 +80,16 @@ public class CatalogService {
         return Outcome.of("ok", "已登记，等待放入");
     }
 
+    @Transactional
+    public Outcome delete(long id) {
+        if (repository.findReagent(id).isEmpty()) {
+            return Outcome.of("not_found", "没有这一瓶");
+        }
+        repository.deleteAccessByReagent(id);
+        repository.deleteReagent(id);
+        return Outcome.of("ok", "已从清单删除");
+    }
+
     public List<AlarmView> alarms() {
         List<AlarmView> views = new ArrayList<>();
         repository.listAlarms().forEach(alarm -> views.add(new AlarmView(
@@ -107,6 +118,20 @@ public class CatalogService {
         return Outcome.of("ok", "已确认");
     }
 
+    public List<PersonView> people() {
+        List<PersonView> views = new ArrayList<>();
+        for (Account account : repository.listAccounts()) {
+            views.add(new PersonView(
+                    account.getId(),
+                    account.getDisplayName(),
+                    account.getUsername(),
+                    "manager".equals(account.getRole()) ? "管理人" : "取用人",
+                    "启用"
+            ));
+        }
+        return views;
+    }
+
     public record ReagentView(
             long id,
             String name,
@@ -129,5 +154,8 @@ public class CatalogService {
             String at,
             boolean acknowledged
     ) {
+    }
+
+    public record PersonView(long id, String name, String username, String role, String status) {
     }
 }

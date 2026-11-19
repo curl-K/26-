@@ -15,4 +15,6 @@ public interface AccessMapper extends BaseMapper<AccessRecord> {
     List<AccessRecord> listBySession(@Param("sessionId") long sessionId);
 
     int removeById(@Param("id") long id);
+
+    int deleteByReagent(@Param("reagentId") long reagentId);
 }

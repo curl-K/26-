@@ -5,6 +5,8 @@ import edu.whpu.reagent.domain.Account;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 @Mapper
 public interface AccountMapper extends BaseMapper<Account> {
 
@@ -13,4 +15,6 @@ public interface AccountMapper extends BaseMapper<Account> {
     int updateAccount(Account account);
 
     int insertAccount(Account account);
+
+    List<Account> listPeople();
 }

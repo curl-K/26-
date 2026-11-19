@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -69,7 +71,19 @@ public class EnvironmentService {
                     EnvLimits.eco2Over(sample.getEco2())
             );
         }
-        return new EnvView(online, beat == null ? null : beat.toString(), reading);
+        List<Sample> recent = new ArrayList<>(repository.latestSamples(60));
+        Collections.reverse(recent);
+        List<HistoryPoint> history = new ArrayList<>();
+        for (Sample sample : recent) {
+            history.add(new HistoryPoint(
+                    sample.getSampledAt().toString(),
+                    sample.getTemperature(),
+                    sample.getHumidity(),
+                    sample.getTvoc(),
+                    sample.getEco2()
+            ));
+        }
+        return new EnvView(online, beat == null ? null : beat.toString(), reading, history);
     }
 
     @Transactional
@@ -112,6 +126,9 @@ public class EnvironmentService {
     ) {
     }
 
-    public record EnvView(boolean online, String lastHeartbeat, Reading latest) {
+    public record HistoryPoint(String at, Double temperature, Double humidity, Integer tvoc, Integer eco2) {
+    }
+
+    public record EnvView(boolean online, String lastHeartbeat, Reading latest, List<HistoryPoint> history) {
     }
 }

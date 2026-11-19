@@ -17,6 +17,8 @@ public interface CabinetRepository {
 
     void insertAccount(Account account);
 
+    List<Account> listAccounts();
+
     void updateAccount(Account account);
 
     Optional<Account> findAccountById(long id);
@@ -44,6 +46,10 @@ public interface CabinetRepository {
     List<AccessRecord> listAccessBySession(long sessionId);
 
     void deleteAccess(long id);
+
+    void deleteAccessByReagent(long reagentId);
+
+    void deleteReagent(long id);
 
     void insertAlarm(Alarm alarm);
 

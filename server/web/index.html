@@ -7,78 +7,349 @@
   <link rel="stylesheet" href="app.css">
 </head>
 <body>
-  <header>
-    <p class="mark">实验室试剂柜</p>
-    <h1>清单</h1>
-    <p class="lead">每一瓶的名称、等级、所在格、状态、经手人和时间。网页不能开格。</p>
-  </header>
-  <main>
-    <section id="login" class="panel">
-      <h2>登录</h2>
-      <form id="login-form">
-        <label>账号<input name="username" autocomplete="username" required></label>
-        <label>密码<input name="password" type="password" autocomplete="current-password" required></label>
-        <button type="submit">进入</button>
-        <p id="login-error" class="error" hidden></p>
-      </form>
+  <section id="login" class="login">
+    <form id="login-form" class="login-card">
+      <p class="brand">实验室试剂柜</p>
+      <h1>清单</h1>
+      <p class="muted">查看试剂所在格、等级和最近一次存取。网页不能开格。</p>
+      <label>账号<input name="username" autocomplete="username" required></label>
+      <label>密码
+        <span class="secret">
+          <input name="password" type="password" autocomplete="current-password" required>
+          <button type="button" class="ghost secret-toggle">显示</button>
+        </span>
+      </label>
+      <label class="remember"><input name="remember" type="checkbox">记住密码</label>
+      <button type="submit">进入</button>
+      <p id="login-error" class="error" hidden></p>
       <p class="hint">演示账号：管理人 manager / manager123，取用人 chen / chen123，li / li123。</p>
-    </section>
+    </form>
+  </section>
 
-    <section id="desk" hidden>
-      <div class="bar">
-        <p id="who"></p>
-        <button id="logout" type="button">退出</button>
+  <div id="desk" class="shell" hidden>
+    <aside class="side">
+      <p class="brand">实验室试剂柜</p>
+      <nav class="side-top">
+        <button type="button" class="nav is-on" data-view="desk">工作台</button>
+        <button type="button" class="nav" data-view="list">清单</button>
+        <button type="button" class="nav manager-only" data-view="register" hidden>登记</button>
+        <button type="button" class="nav" data-view="alarms">告警</button>
+        <button type="button" class="nav" data-view="env">环境</button>
+      </nav>
+      <div class="side-bottom manager-only" hidden>
+        <button type="button" class="nav" id="manage-toggle">管理</button>
+        <div class="submenu" id="manage-menu">
+          <div class="submenu-inner">
+            <button type="button" class="nav sub" data-view="people">人员</button>
+            <button type="button" class="nav sub" data-view="permissions">权限</button>
+          </div>
+        </div>
       </div>
-      <p id="note" class="note" hidden></p>
-      <table>
-        <thead>
-          <tr>
-            <th>名称</th>
-            <th>等级</th>
-            <th>格</th>
-            <th>状态</th>
-            <th>经手人</th>
-            <th>时间</th>
-          </tr>
-        </thead>
-        <tbody id="rows"></tbody>
-      </table>
-      <p id="empty" class="hint" hidden>清单里还没有试剂。</p>
+      <p class="side-note">网页不能开格</p>
+    </aside>
 
-      <section id="register" class="panel" hidden>
-        <h2>登记待绑定</h2>
-        <p class="hint">低和中在第一格，高在第二格。这一格只能有一条待绑定。</p>
-        <form id="register-form">
+    <div class="main">
+      <header class="top">
+        <div>
+          <p id="view-title" class="eyebrow">工作台</p>
+          <p id="who" class="who"></p>
+        </div>
+        <div class="top-actions">
+          <button id="self-password-toggle" type="button" class="ghost">改密码</button>
+          <button id="logout" type="button" class="ghost">退出</button>
+        </div>
+      </header>
+      <p id="note" class="toast" hidden></p>
+      <form id="self-password" class="card form" hidden>
+        <h2>改密码</h2>
+        <label>当前密码
+          <span class="secret">
+            <input name="current" type="password" autocomplete="current-password">
+            <button type="button" class="ghost secret-toggle">显示</button>
+          </span>
+        </label>
+        <label>新密码
+          <span class="secret">
+            <input name="password" type="password" autocomplete="new-password">
+            <button type="button" class="ghost secret-toggle">显示</button>
+          </span>
+        </label>
+        <label>确认密码
+          <span class="secret">
+            <input name="confirm" type="password" autocomplete="new-password">
+            <button type="button" class="ghost secret-toggle">显示</button>
+          </span>
+        </label>
+        <button type="submit">保存</button>
+        <ul class="api-missing">
+          <li>POST /api/accounts：注册人员</li>
+          <li>POST /api/auth/password：改自己的密码</li>
+          <li>POST /api/accounts/{username}/password：管理人设置他人的新密码</li>
+          <li>POST /api/accounts/{username}/reset-password：管理人重置为临时密码，并要求重新登录</li>
+        </ul>
+      </form>
+
+      <section data-view="desk" class="view">
+        <div id="stats" class="stats"></div>
+        <h2>两格</h2>
+        <div id="slots" class="slots"></div>
+        <div class="section-head">
+          <h2>最近清单</h2>
+          <button type="button" class="text-link" data-view="list">查看清单</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>名称</th>
+                <th>等级</th>
+                <th>格</th>
+                <th>状态</th>
+                <th>经手人</th>
+                <th>时间</th>
+              </tr>
+            </thead>
+            <tbody id="desk-rows"></tbody>
+          </table>
+          <p id="desk-empty" class="empty" hidden>清单里还没有试剂。</p>
+        </div>
+      </section>
+
+      <section data-view="list" class="view" hidden>
+        <div class="table-card">
+          <div class="toolbar">
+            <input id="filter-q" type="search" placeholder="按名称筛选">
+            <div class="menu" data-filter="level">
+              <button type="button" class="menu-trigger" aria-expanded="false" aria-label="等级"><span class="menu-value">全部</span><span class="menu-caret" aria-hidden="true"></span></button>
+              <div class="menu-panel" hidden>
+                <button type="button" data-value="全部">全部</button>
+                <button type="button" data-value="低">低</button>
+                <button type="button" data-value="中">中</button>
+                <button type="button" data-value="高">高</button>
+              </div>
+            </div>
+            <div class="menu" data-filter="status">
+              <button type="button" class="menu-trigger" aria-expanded="false" aria-label="状态"><span class="menu-value">全部</span><span class="menu-caret" aria-hidden="true"></span></button>
+              <div class="menu-panel" hidden>
+                <button type="button" data-value="全部">全部</button>
+                <button type="button" data-value="在柜">在柜</button>
+                <button type="button" data-value="已取出">已取出</button>
+                <button type="button" data-value="待绑定">待绑定</button>
+              </div>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="list-table">
+              <thead>
+                <tr>
+                  <th class="col-name">名称</th>
+                  <th class="col-level">等级</th>
+                  <th class="col-slot">格</th>
+                  <th class="col-status">状态</th>
+                  <th class="col-handler">经手人</th>
+                  <th class="col-time">时间</th>
+                  <th class="col-action manager-only" hidden>操作</th>
+                </tr>
+              </thead>
+              <tbody id="list-rows"></tbody>
+            </table>
+            <p id="list-empty" class="empty" hidden>没有符合筛选的试剂。</p>
+          </div>
+        </div>
+      </section>
+
+      <section data-view="register" class="view" hidden>
+        <form id="register-form" class="card form">
+          <h2>登记待绑定</h2>
+          <p class="muted">低和中在第一格，高在第二格。这一格只能有一条待绑定。</p>
           <label>名称<input name="name" required maxlength="128"></label>
-          <label>等级
-            <select name="level">
-              <option>低</option>
-              <option>中</option>
-              <option>高</option>
-            </select>
-          </label>
-          <label>格
-            <select name="slot">
-              <option value="1">第一格</option>
-              <option value="2">第二格</option>
-            </select>
-          </label>
+          <div class="field">
+            <span>等级</span>
+            <input type="hidden" name="level" value="低">
+            <div class="menu" data-input="level">
+              <button type="button" class="menu-trigger" aria-expanded="false" aria-label="等级"><span class="menu-value">低</span><span class="menu-caret" aria-hidden="true"></span></button>
+              <div class="menu-panel" hidden>
+                <button type="button" data-value="低">低</button>
+                <button type="button" data-value="中">中</button>
+                <button type="button" data-value="高" class="menu-high">高</button>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <span>格</span>
+            <input type="hidden" name="slot" value="1">
+            <div class="menu" data-input="slot">
+              <button type="button" class="menu-trigger" aria-expanded="false" aria-label="格"><span class="menu-value">第一格</span><span class="menu-caret" aria-hidden="true"></span></button>
+              <div class="menu-panel" hidden>
+                <button type="button" data-value="1">第一格</button>
+                <button type="button" data-value="2">第二格</button>
+              </div>
+            </div>
+          </div>
           <button type="submit">登记</button>
         </form>
       </section>
 
-      <section id="alarms" class="panel" hidden>
-        <h2>告警</h2>
-        <ul id="alarm-list"></ul>
+      <section data-view="people" class="view" hidden>
+        <ul class="api-missing">
+          <li>POST /api/accounts：注册人员</li>
+          <li>POST /api/auth/password：改自己的密码</li>
+          <li>POST /api/accounts/{username}/password：管理人设置他人的新密码</li>
+          <li>POST /api/accounts/{username}/reset-password：管理人重置为临时密码，并要求重新登录</li>
+        </ul>
+        <p class="muted">修改角色、停用或启用也还不能保存到服务器。</p>
+        <div class="people-toolbar">
+          <button type="button" id="person-register-toggle">注册人员</button>
+        </div>
+        <form id="person-register" class="card form" hidden>
+          <h2>注册人员</h2>
+          <label>姓名<input name="name" autocomplete="name"></label>
+          <label>账号<input name="username" autocomplete="off"></label>
+          <div class="field">
+            <span>角色</span>
+            <input type="hidden" name="role" value="取用人">
+            <div class="menu" data-input="role">
+              <button type="button" class="menu-trigger" aria-expanded="false" aria-label="角色"><span class="menu-value">取用人</span><span class="menu-caret" aria-hidden="true"></span></button>
+              <div class="menu-panel" hidden>
+                <button type="button" data-value="取用人">取用人</button>
+                <button type="button" data-value="管理人">管理人</button>
+              </div>
+            </div>
+          </div>
+          <label>初始密码
+            <span class="secret">
+              <input name="password" type="password" autocomplete="new-password">
+              <button type="button" class="ghost secret-toggle">显示</button>
+            </span>
+          </label>
+          <label>确认密码
+            <span class="secret">
+              <input name="confirm" type="password" autocomplete="new-password">
+              <button type="button" class="ghost secret-toggle">显示</button>
+            </span>
+          </label>
+          <button type="submit">注册</button>
+        </form>
+        <div class="table-card people-card">
+          <div class="table-wrap">
+            <table class="list-table people-table">
+              <thead>
+                <tr>
+                  <th class="col-name">姓名</th>
+                  <th class="col-handler">账号</th>
+                  <th class="col-level">角色</th>
+                  <th class="col-status">状态</th>
+                  <th class="col-action">操作</th>
+                </tr>
+              </thead>
+              <tbody id="people-rows"></tbody>
+            </table>
+            <p id="people-empty" class="empty" hidden>还没有人员。</p>
+          </div>
+        </div>
+        <div id="person-detail-park" hidden>
+          <article id="person-detail" class="card form">
+            <h2 id="person-detail-title">查看</h2>
+            <div id="person-view">
+              <dl class="person-facts">
+                <div><dt>姓名</dt><dd id="person-name"></dd></div>
+                <div><dt>账号</dt><dd id="person-username"></dd></div>
+                <div><dt>角色</dt><dd id="person-fact-role"></dd></div>
+                <div><dt>状态</dt><dd id="person-fact-status"></dd></div>
+                <div><dt>密码</dt><dd class="password-line"><span id="person-fact-password">••••••</span><button type="button" class="ghost" id="person-password-reveal">显示</button></dd></div>
+              </dl>
+              <div class="person-password-links">
+                <button type="button" class="ghost" id="person-view-password">修改密码</button>
+                <button type="button" class="ghost" id="person-view-reset">重置密码</button>
+              </div>
+            </div>
+            <form id="person-role" hidden>
+              <p class="muted">账号 <span id="person-role-account"></span></p>
+              <div class="field">
+                <span>角色</span>
+                <input type="hidden" name="role" value="取用人">
+                <div class="menu" data-input="role">
+                  <button type="button" class="menu-trigger" aria-expanded="false" aria-label="角色"><span class="menu-value">取用人</span><span class="menu-caret" aria-hidden="true"></span></button>
+                  <div class="menu-panel" hidden>
+                    <button type="button" data-value="取用人">取用人</button>
+                    <button type="button" data-value="管理人">管理人</button>
+                  </div>
+                </div>
+              </div>
+              <button type="submit">保存</button>
+            </form>
+            <form id="person-status" hidden>
+              <p class="muted">账号 <span id="person-status-account"></span></p>
+              <div class="field">
+                <span>状态</span>
+                <input type="hidden" name="status" value="启用">
+                <div class="menu" data-input="status">
+                  <button type="button" class="menu-trigger" aria-expanded="false" aria-label="状态"><span class="menu-value">启用</span><span class="menu-caret" aria-hidden="true"></span></button>
+                  <div class="menu-panel" hidden>
+                    <button type="button" data-value="启用">启用</button>
+                    <button type="button" data-value="停用">停用</button>
+                  </div>
+                </div>
+              </div>
+              <button type="submit">保存</button>
+            </form>
+            <form id="person-password" hidden>
+              <label>新密码
+                <span class="secret">
+                  <input name="password" type="password" autocomplete="new-password">
+                  <button type="button" class="ghost secret-toggle">显示</button>
+                </span>
+              </label>
+              <label>确认密码
+                <span class="secret">
+                  <input name="confirm" type="password" autocomplete="new-password">
+                  <button type="button" class="ghost secret-toggle">显示</button>
+                </span>
+              </label>
+              <button type="submit">保存</button>
+            </form>
+            <form id="person-reset" hidden>
+              <p class="muted">重置后需用临时密码重新登录。现有密码不会显示在这里，临时密码也不会在页面上生成。</p>
+              <button type="submit">重置密码</button>
+            </form>
+          </article>
+        </div>
       </section>
 
-      <section id="env" class="panel" hidden>
-        <h2>环境 <span id="online"></span></h2>
-        <p class="hint">连续三次越限才告警。短时偏高只显示在读数里。</p>
-        <dl id="env-readings"></dl>
+      <section data-view="permissions" class="view" hidden>
+        <p class="muted">调整还不能保存到服务器。</p>
+        <div class="table-card">
+          <table class="list-table">
+            <thead>
+              <tr>
+                <th class="col-name">能力</th>
+                <th class="col-level">取用人</th>
+                <th class="col-level">管理人</th>
+              </tr>
+            </thead>
+            <tbody id="permission-rows"></tbody>
+          </table>
+        </div>
       </section>
-    </section>
-  </main>
+
+      <section data-view="alarms" class="view" hidden>
+        <p id="alarm-count" class="alarm-count"></p>
+        <div id="alarm-list" class="alarm-list"></div>
+      </section>
+
+      <section data-view="env" class="view" hidden>
+        <div class="env-head">
+          <h2>环境</h2>
+          <span id="online" class="badge"></span>
+        </div>
+        <p class="muted">连续三次越限才告警。短时偏高只显示在读数里。</p>
+        <div id="env-readings" class="readings"></div>
+        <div id="env-charts" class="charts"></div>
+        <p id="env-time" class="muted"></p>
+      </section>
+    </div>
+  </div>
+  <script src="vendor/apexcharts.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

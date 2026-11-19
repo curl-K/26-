@@ -20,4 +20,6 @@ public interface ReagentMapper extends BaseMapper<Reagent> {
     int insertReagent(Reagent reagent);
 
     int updateReagent(Reagent reagent);
+
+    int deleteReagent(@Param("id") long id);
 }
